@@ -1,0 +1,5 @@
+C:\Users\root\Desktop\RemoteControl\RemoteControl\Windows Server\ControlServer\ControlServer\bin\Debug\ControlServer.exe
+C:\Users\root\Desktop\RemoteControl\RemoteControl\Windows Server\ControlServer\ControlServer\bin\Debug\ControlServer.pdb
+C:\Users\root\Desktop\RemoteControl\RemoteControl\Windows Server\ControlServer\ControlServer\obj\Debug\ControlServer.csprojResolveAssemblyReference.cache
+C:\Users\root\Desktop\RemoteControl\RemoteControl\Windows Server\ControlServer\ControlServer\obj\Debug\ControlServer.exe
+C:\Users\root\Desktop\RemoteControl\RemoteControl\Windows Server\ControlServer\ControlServer\obj\Debug\ControlServer.pdb
