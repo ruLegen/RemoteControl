@@ -4,35 +4,54 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 namespace ControlServer
 {
-    class Programm
+   public class Launcher
     {
-        string name = "";
-        string arguments = "";
-        string path = "";
-    }
-    class ProgrammLauncher
-    {
-        string name = "";
-        string arguments = "";
-        string path = "";
-        ProgrammLauncher()
+        String arguments;
+        ProcessStartInfo startInfo;
+        Process program;
+        public Launcher(string _name, string _argumnents)
         {
-
+            this.arguments = _argumnents;
+            this.startInfo = new ProcessStartInfo();
+            this.startInfo.FileName = _name;
+           // this.startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            this.startInfo.CreateNoWindow = true;
+            this.startInfo.RedirectStandardInput = true;
+            this.startInfo.RedirectStandardOutput = true;
+            this.startInfo.UseShellExecute = false;
+            this.program = new Process();
+            this.program.StartInfo = startInfo;
         }
-        
-    };
+        public String Start()
+        {
+            string response;
+
+            this.program.Start();
+            this.program.StandardInput.Flush();
+            this.program.StandardInput.WriteLine(this.arguments);
+            this.program.StandardInput.Flush();
+            this.program.StandardInput.Close();
+            response = this.program.StandardOutput.ReadToEnd();
+            return response;
+        }
+
+    }
 
     class Program
     {
         static void Main(string[] args)
         {
-            int port = 8005;
+start:
+            int port = 9000;
+            string cmd = "";
+            String[] splitedResponse;
             // получаем адреса для запуска сокета
-            IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
-
+            IPEndPoint ipPoint = new IPEndPoint(IPAddress.Any, port);
+            Console.WriteLine(IPAddress.Any.ToString()); 
             // создаем сокет
             Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
@@ -44,6 +63,12 @@ namespace ControlServer
 
                 while (true)
                 {
+                    Launcher program;
+
+                    String   response,
+                             programName,
+                             arguments;
+
                     Socket handler = listenSocket.Accept();
                     // получаем сообщение
                     StringBuilder builder = new StringBuilder();
@@ -58,20 +83,26 @@ namespace ControlServer
                     }
                     while (handler.Available > 0);
 
-                    Console.WriteLine(builder.ToString());
+                  
+                    splitedResponse = builder.ToString().Split('%');
+                    programName = splitedResponse[0];
+                    arguments = splitedResponse[1];
 
+                    program = new Launcher(programName,arguments);
+                    response = program.Start();
                     // отправляем ответ
-                   // string message = "ваше сообщение доставлено";
-                    //data = Encoding.Unicode.GetBytes(message);
-                    //handler.Send(data);
+                    // string message = "ваше сообщение доставлено";
+                    data = Encoding.ASCII.GetBytes(response);
+                    handler.Send(data);
                     // закрываем сокет
                     handler.Shutdown(SocketShutdown.Both);
                     handler.Close();
+
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                goto start; 
             }
         }
     }
